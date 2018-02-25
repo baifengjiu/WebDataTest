@@ -1,0 +1,181 @@
+package fx.zy.ns;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import sun.org.mozilla.javascript.internal.ast.Name;
+
+public class Frame {
+	JTextField urlField = new JTextField("http://",50);
+	JTextField actionField = new JTextField(20);
+	JTextArea getText = new JTextArea(35,45);
+	JPanel leftPanel = new JPanel();
+	JPanel rightPanel = new JPanel();
+
+	JPanel nameLabel = new JPanel();
+	
+	public void init(){
+		final JFrame mainFrame = new JFrame("Action Test");
+		JPanel topPanel = new JPanel();
+		//url
+		JLabel urlLable = new JLabel("url:");
+		JLabel duan = new JLabel("/");
+		
+		//action name
+		JLabel actionLabel = new JLabel(".action");
+		
+		//get response message
+		getText.setToolTipText("接收服务器的消息");
+		getText.setLineWrap(true);
+		
+		JButton button = new JButton("提交");
+		button.setVisible(true);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				String url = urlField.getText()+"/"+actionField.getText()+".action";
+				List<String> key = new ArrayList<>();
+				List<String> value = new ArrayList<>();
+				for(Component c:rightPanel.getComponents()){
+					if(c instanceof JPanel){
+						String name = c.getName();
+						System.out.println(name);
+						for (Component s:((JPanel) c).getComponents()) {
+						
+							if (s instanceof JTextField) {
+								key.add(((JTextField) s).getText());
+							}
+							if (s instanceof JTextArea) {
+								value.add(Util.replaceBlank(((JTextArea) s).getText()));
+							}
+						}
+					}
+				}		
+				
+				String rslt = SendRequest.sendByGet(mainFrame,url, key, value);
+				//String rslt ="这是本地测试";
+				getText.append("=============="+actionField.getText()+".action=============\n");
+				getText.append("url："+url+"\n");
+				getText.append(rslt+"\n");
+				getText.append("===================================================\n");				
+			}
+		});
+		
+		JButton aButton = new JButton("添加参数键值对");
+		aButton.setVisible(true);
+		aButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				addPar();
+			}
+		});
+		
+		topPanel.add(urlLable);
+		topPanel.add(urlField);
+		topPanel.add(duan);
+		topPanel.add(actionField);
+		topPanel.add(actionLabel);
+		leftPanel.add(getText);
+
+		rightPanel.setLayout(new BorderLayout());
+		addPar();
+
+		rightPanel.add(aButton,BorderLayout.NORTH);
+		
+		mainFrame.add(topPanel,BorderLayout.NORTH);
+		mainFrame.add(nameLabel,BorderLayout.CENTER);
+		mainFrame.add(leftPanel,BorderLayout.WEST);
+		mainFrame.add(rightPanel,BorderLayout.EAST);
+		mainFrame.add(button,BorderLayout.SOUTH);
+		Util.setMainFrame(mainFrame, 1000, 700);
+	}
+	
+	private void addPar() {
+		int i=0;
+		for(Component c:rightPanel.getComponents()){
+			if(c instanceof JPanel){
+				i++;
+				c.setVisible(false);
+			}
+		}
+		
+		addLabel(i);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setName("par"+i);
+		panel.setVisible(true);
+		
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout());
+		panel1.setVisible(true);
+		
+		
+		JTextField key = new JTextField("par_name");
+		key.setName("key"+i);
+		
+		JTextArea value = new JTextArea(27,40);
+		value.setToolTipText("发送的数据");
+		value.setLineWrap(true);
+		value.setName("value"+i);
+		
+		panel.add(key,BorderLayout.NORTH);
+		panel.add(value,BorderLayout.SOUTH);
+		
+		rightPanel.add(panel,BorderLayout.SOUTH); 
+		
+	}
+	
+	private void addLabel(int i) {
+		JLabel label = new JLabel();
+		label.setText("参数"+i);
+		label.setName(""+i);
+		label.setVisible(true);
+
+		label.setBackground(new Color(252,230,202));
+		label.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				JLabel lb = (JLabel) e.getSource();
+				String lbName= lb.getName();
+				
+				for(Component c:rightPanel.getComponents()){
+					if(c instanceof JPanel){						
+						if (c.getName().contains(lbName)) {
+							c.setVisible(true);
+						}else {
+							c.setVisible(false);
+						}
+					}
+				}				
+			}
+		});
+
+		nameLabel.setSize(5,15);;
+		nameLabel.setVisible(true);
+		nameLabel.add(label);
+	}
+	
+	
+}

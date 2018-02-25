@@ -1,0 +1,43 @@
+package fx.zy.ns;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+
+
+public class Util {	
+	//设置窗体在屏幕居中位置上
+	public static void setMainFrame(JFrame frame,int width,int height) {
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		//获取屏幕的分辨率
+		Dimension dimension = toolkit.getScreenSize();
+		int x = (int) dimension.getWidth();
+		int y = (int) dimension.getHeight();
+		
+		frame.setBounds((x-width)/2, (y-height)/2, width, height);
+	}	
+	
+	public static void getDialog(JFrame frame,String message){
+		JOptionPane.showMessageDialog(frame, message,"警告",JOptionPane.WARNING_MESSAGE);
+	}
+	
+	 /**
+	 * 去除空格，换行符，tab等
+	 */
+	public static String replaceBlank(String str) {  
+        String dest = "";  
+        if (str!=null) {  
+            Pattern p = Pattern.compile("\\s*|\t|\r|\n");  
+            Matcher m = p.matcher(str);  
+            dest = m.replaceAll("");  
+        }  
+        return dest;  
+    }  
+}

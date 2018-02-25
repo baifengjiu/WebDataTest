@@ -1,0 +1,461 @@
+package fx.zy.ns;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.FlowLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.UIManager;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.LineBorder;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+
+public class ActionTest {
+
+	private JFrame frmActionText;
+	private final JPanel _Url_box = new JPanel();
+	private JTextField _Url_Text1;
+	private JTextField _Url_Text2;
+	private JTextArea _Get_Message_Content;
+	private JPanel _RightPanel;
+	private JTextField _Par_Name_Text;
+	private JTextArea _Par_Value_Text;
+	private JPanel _Label_Box;
+	private String page;
+
+	/**
+	 * Launch the application.
+	 */
+	public void init() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ActionTest window = new ActionTest();
+					window.frmActionText.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public ActionTest() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frmActionText = new JFrame();
+		frmActionText.setTitle("Action Text");
+		frmActionText.getContentPane().setBackground(UIManager.getColor("Button.background"));
+		frmActionText.setBounds(100, 100, 1085, 638);
+		frmActionText.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmActionText.getContentPane().setLayout(null);
+		_Url_box.setBackground(Color.ORANGE);
+		_Url_box.setBounds(2, 2, 1064, 45);
+		frmActionText.getContentPane().add(_Url_box);
+		_Url_box.setLayout(null);
+		
+		JLabel _Url_Label1 = new JLabel("url:");
+		_Url_Label1.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		_Url_Label1.setBounds(245, 13, 24, 15);
+		_Url_box.add(_Url_Label1);
+		
+		_Url_Text1 = new JTextField();
+		_Url_Text1.setBounds(270, 9, 306, 25);
+		_Url_Text1.setText("http://");
+		_Url_box.add(_Url_Text1);
+		_Url_Text1.setColumns(50);
+		
+		JLabel _Url_Label2 = new JLabel("/");
+		_Url_Label2.setFont(new Font("SansSerif", Font.PLAIN, 20));
+		_Url_Label2.setBounds(585, 14, 6, 15);
+		_Url_box.add(_Url_Label2);
+		
+		_Url_Text2 = new JTextField();
+		_Url_Text2.setBounds(603, 9, 126, 25);
+		_Url_box.add(_Url_Text2);
+		_Url_Text2.setColumns(20);
+		
+		JLabel _Url_Label3 = new JLabel(".action");
+		_Url_Label3.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		_Url_Label3.setBounds(732, 15, 53, 15);
+		_Url_box.add(_Url_Label3);
+		
+		JButton _Url_Submit = new JButton("提交");
+		_Url_Submit.setBounds(904, 8, 70, 25);
+		_Url_Submit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				String url = _Url_Text1.getText()+"/"+_Url_Text2.getText()+".action";
+				List<String> key = new ArrayList<>();
+				List<String> value = new ArrayList<>();
+				for(Component c:_RightPanel.getComponents()){
+					if(c instanceof JPanel){
+						//String name = c.getName();
+						for (Component s:((JPanel) c).getComponents()) {
+							if (s instanceof JTextField) {
+								key.add(((JTextField) s).getText());
+//								System.out.println(((JTextField) s).getText());
+							}
+							if (s instanceof JTextArea) {
+								try {
+									String data = Util.replaceBlank(((JTextArea) s).getText());
+									data = URLEncoder.encode(data,"UTF-8");
+									value.add(data);
+								} catch (UnsupportedEncodingException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+//								System.out.println(((JTextArea) s).getText());
+							}
+						}
+					}
+				}
+				
+				String rslt = SendRequest.sendByGet(frmActionText,url, key, value);
+				//String rslt ="这是本地测试";
+				_Get_Message_Content.append("================="+_Url_Text2.getText()+".action===============\n");
+				_Get_Message_Content.append("url："+url+"\n");
+				_Get_Message_Content.append(rslt+"\n");
+				_Get_Message_Content.append("===================================================\n");				
+			}
+		});
+		_Url_box.add(_Url_Submit);
+		
+		
+		JPanel _Get_Message_Box = new JPanel();
+		_Get_Message_Box.setBackground(Color.ORANGE);
+		_Get_Message_Box.setBounds(2, 50, 465, 547);
+		frmActionText.getContentPane().add(_Get_Message_Box);
+		_Get_Message_Box.setLayout(new BorderLayout(0, 0));
+		
+		_Get_Message_Content = new JTextArea(25,39);
+		_Get_Message_Content.setSize(new Dimension(465, 547));
+		_Get_Message_Content.setEditable(false);
+		_Get_Message_Content.setForeground(Color.BLACK);
+		_Get_Message_Content.setToolTipText("show the reponse message content");
+		
+		JScrollPane scrollPane = new JScrollPane(_Get_Message_Content);
+		scrollPane.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		//scrollPane.setSize(600, 400);
+		_Get_Message_Box.add(scrollPane);
+		
+		JPanel _Button_Box = new JPanel();
+		_Button_Box.setBounds(469, 50, 119, 120);
+		frmActionText.getContentPane().add(_Button_Box);
+		_Button_Box.setBackground(Color.ORANGE);
+		_Button_Box.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		JButton button = new JButton("新增键值对");
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				addPar();
+			}
+		});		
+		_Button_Box.add(button);
+		
+		JButton button_1 = new JButton("删除所有键值对");
+		_Button_Box.add(button_1);
+		button_1.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				delAllPar();
+			}
+		});	
+		
+		JButton button_2 = new JButton("删除当前键值对");
+		_Button_Box.add(button_2);
+		button_2.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub				
+				delPar();
+			}
+
+			
+		});	
+		
+		_Label_Box = new JPanel();
+		_Label_Box.setBackground(Color.ORANGE);
+		_Label_Box.setBounds(469, 173, 119, 424);
+		frmActionText.getContentPane().add(_Label_Box);	
+		
+		_RightPanel = new JPanel();
+		_RightPanel.setBounds(590, 50, 476, 547);
+		frmActionText.getContentPane().add(_RightPanel);
+		
+		addPar();
+		
+	}
+	
+	private void addPar() {
+		int lenght = _RightPanel.getComponents().length;
+		int[] nums = new int[lenght];
+		int k=0;
+		for(Component c:_RightPanel.getComponents()){
+			if(c instanceof JPanel){
+				String num = c.getName().substring(c.getName().length()-1);
+				nums[k]=Integer.parseInt(num);
+				k++;
+				c.setVisible(false);
+			}
+		}
+
+		int i=0;
+		if(nums.length>0){
+			Arrays.sort(nums);
+			for(int j=0;j<nums.length;j++){
+				if(i==nums[j]){
+					i++;
+				}
+			}
+		}
+		page = i+"";
+		addLabel(i);
+		
+		_RightPanel.setLayout(new CardLayout(0, 0));
+		
+		JPanel _Send_Message_Box = new JPanel();
+		_RightPanel.add(_Send_Message_Box, "name_23353243440383");
+		_Send_Message_Box.setName("panel_"+i);
+		_Send_Message_Box.setBackground(Color.ORANGE);
+		
+		_Par_Name_Text = new JTextField();
+		_Par_Name_Text.setText("par_name");
+		_Par_Name_Text.setName("par_name_"+i);
+		_Par_Name_Text.setColumns(20);
+		
+		_Par_Value_Text = new JTextArea(18,20);
+		_Par_Value_Text.setLineWrap(true);
+		_Par_Value_Text.setSize(new Dimension(200, 50));
+		_Par_Value_Text.setName("par_value_"+i);
+		_Par_Value_Text.setToolTipText("show the request message content");
+		_Par_Value_Text.setText("send_message_content");
+		
+		
+		JLabel lblKey = new JLabel("Key:");
+		
+		JLabel lblValue = new JLabel("Value:");
+		
+		JLabel lblParams = new JLabel("params"+i);
+		lblParams.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		
+//		JScrollPane scrollPane = new JScrollPane(_Par_Value_Text);
+//		scrollPane.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+//		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		GroupLayout gl__Send_Message_Box = new GroupLayout(_Send_Message_Box);
+		gl__Send_Message_Box.setHorizontalGroup(
+			gl__Send_Message_Box.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl__Send_Message_Box.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl__Send_Message_Box.createParallelGroup(Alignment.LEADING)
+						.addComponent(_Par_Value_Text, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+						.addComponent(lblKey)
+						.addGroup(gl__Send_Message_Box.createSequentialGroup()
+							.addComponent(_Par_Name_Text, GroupLayout.PREFERRED_SIZE, 206, GroupLayout.PREFERRED_SIZE)
+							.addGap(96)
+							.addComponent(lblParams))
+						.addGroup(gl__Send_Message_Box.createSequentialGroup()
+							.addComponent(lblValue)
+							.addGap(18)
+							))
+					.addContainerGap())
+		);
+		gl__Send_Message_Box.setVerticalGroup(
+			gl__Send_Message_Box.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl__Send_Message_Box.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblKey)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl__Send_Message_Box.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl__Send_Message_Box.createSequentialGroup()
+							.addComponent(_Par_Name_Text, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl__Send_Message_Box.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblValue)
+								))
+						.addComponent(lblParams))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(_Par_Value_Text, GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		_Send_Message_Box.setLayout(gl__Send_Message_Box);
+		
+	}
+	
+	private void addLabel(int i) {
+		for(Component c:_Label_Box.getComponents()){
+			if(c instanceof JLabel){						
+				c.setBackground(Color.LIGHT_GRAY);
+			}
+		}
+		JLabel _Label_1 = new JLabel("params"+i);
+		_Label_1.setHorizontalTextPosition(SwingConstants.CENTER);
+		_Label_1.setHorizontalAlignment(SwingConstants.CENTER);
+		_Label_1.setPreferredSize(new Dimension(90, 25));
+		_Label_1.setSize(new Dimension(10, 7));
+		_Label_1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		_Label_1.setAlignmentY(1.0f);
+		_Label_1.setAlignmentX(2.0f);
+		_Label_1.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+		_Label_1.setOpaque(true);
+		_Label_Box.add(_Label_1);
+		_Label_1.setName(""+i);
+		_Label_1.setForeground(Color.BLACK);
+		_Label_1.setBackground(Color.PINK);
+		_Label_1.setFont(new Font("宋体", Font.PLAIN, 16));
+		_Label_1.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				JLabel lb = (JLabel) e.getSource();
+				String lbName= lb.getName();
+				
+				for(Component c:_Label_Box.getComponents()){
+					if(c instanceof JLabel){						
+						if (c.getName().equals(lbName)) {
+							c.setBackground(Color.PINK);
+						}else{
+							c.setBackground(Color.LIGHT_GRAY);
+						}
+					}
+				}
+				
+				for(Component c:_RightPanel.getComponents()){
+					if(c instanceof JPanel){						
+						if (c.getName().contains(lbName)) {
+							page = lbName;
+							c.setVisible(true);
+						}else {
+							c.setVisible(false);
+						}
+					}
+				}				
+			}
+		});
+	}
+	
+	private void delPar() {
+		// TODO Auto-generated method stub
+		int count = 0;
+		for(Component c:_RightPanel.getComponents()){			
+			if(c instanceof JPanel){
+				count++;
+			}
+		}
+		
+		for(Component c:_RightPanel.getComponents()){
+			if (count<=1) {
+				return;
+			}			
+			if(c instanceof JPanel){
+				count++;
+				if (c.getName().contains(page)) {
+					_RightPanel.remove(c);
+					_RightPanel.repaint();
+					page = c.getName().substring(c.getName().length()-1);
+				}
+			}
+		}
+		
+		for(Component c:_Label_Box.getComponents()){
+			if(c instanceof JLabel){						
+				if (c.getName().contains(page)) {
+					_Label_Box.remove(c);
+					_Label_Box.repaint();
+				}
+			}
+		}
+		
+		int i=0;
+		for(Component c:_RightPanel.getComponents()){
+			if(c instanceof JPanel){						
+				if (i==0) {
+					page = c.getName().substring(c.getName().length()-1);
+					c.setVisible(true);
+				}else {
+					c.setVisible(false);
+				}
+				i++;
+			}
+		}
+		i=0;
+		for(Component c:_Label_Box.getComponents()){
+			if(c instanceof JLabel){						
+				if (i==0) {
+					c.setBackground(Color.PINK);
+				}else{
+					c.setBackground(Color.LIGHT_GRAY);
+				}
+			}
+			i++;
+		}
+	}
+	
+	private void delAllPar() {
+		// TODO Auto-generated method stub
+		for(Component c:_RightPanel.getComponents()){
+			if(c instanceof JPanel){
+				_RightPanel.remove(c);
+				_RightPanel.repaint();
+			}
+		}
+		
+		for(Component c:_Label_Box.getComponents()){
+			if(c instanceof JLabel){
+				_Label_Box.remove(c);
+				_Label_Box.repaint();
+			}
+		}
+		addPar();
+	}
+}
